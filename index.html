@@ -1,1 +1,143 @@
-outputs('브리핑HTML')
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>오늘의 브리핑</title>
+<style>
+  :root{
+    --ink:#1e293b; --muted:#94a3b8; --line:#e9edf3;
+    --indigo:#4f46e5; --indigo-soft:#eef2ff; --indigo-bar:#6366f1;
+    --amber:#f59e0b; --amber-ink:#b45309; --amber-soft:#fffbeb; --amber-line:#fde68a;
+    --blue-soft:#eff6ff; --blue-ink:#3b5bdb;
+    --chip:#f1f5f9; --chip-line:#e2e8f0;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{
+    background:#0f1117;
+    font-family:'Pretendard','Apple SD Gothic Neo','Malgun Gothic',-apple-system,sans-serif;
+    color:var(--ink); padding:24px; line-height:1.5;
+  }
+  .frame{
+    max-width:1180px; margin:0 auto; background:#fff;
+    border-radius:22px; padding:32px 34px;
+    box-shadow:0 20px 60px rgba(0,0,0,.35);
+  }
+  .top{display:flex; justify-content:space-between; align-items:flex-start; gap:20px; flex-wrap:wrap}
+  .date{color:var(--muted); font-size:14px; font-weight:600}
+  .title{font-size:30px; font-weight:800; margin-top:3px; letter-spacing:-1px}
+  .chips{display:flex; gap:10px}
+  .chip{background:var(--chip); border:1px solid var(--chip-line); border-radius:14px; padding:10px 16px; text-align:center; min-width:80px}
+  .chip .lbl{font-size:12px; color:var(--muted); font-weight:600}
+  .chip .num{font-size:22px; font-weight:800; margin-top:2px}
+  .chip.warn .num{color:var(--amber)}
+  .greet{margin-top:18px; font-size:14px; color:#475569}
+  .progress{margin-top:16px; display:flex; align-items:center; gap:16px; background:#f8fafc; border-radius:12px; padding:14px 18px}
+  .progress .plabel{font-size:13px; color:#64748b; font-weight:600; white-space:nowrap}
+  .progress .track{flex:1; height:9px; background:#e2e8f0; border-radius:99px; overflow:hidden}
+  .progress .fill{height:100%; background:linear-gradient(90deg,var(--indigo-bar),var(--indigo)); border-radius:99px}
+  .progress .pct{font-size:13px; font-weight:800; color:var(--indigo)}
+  .grid3{display:grid; grid-template-columns:1fr 1fr 1fr; gap:22px; margin-top:26px}
+  .col{display:flex; flex-direction:column; gap:24px}
+  .sec-head{display:flex; align-items:center; gap:8px; font-size:15px; font-weight:800; margin-bottom:11px}
+  .sec-head .dot{width:8px; height:8px; border-radius:3px; background:var(--indigo)}
+  .sec-head.amber .dot{background:var(--amber)}
+  .sec-head.blue .dot{background:var(--blue-ink)}
+  .sec-link{text-decoration:none; color:inherit; display:flex; align-items:center; gap:8px}
+  .sec-link .go{font-size:11px; color:var(--indigo); font-weight:600; margin-left:auto}
+  .card{border:1px solid var(--line); border-radius:12px; padding:16px 18px}
+  .slot{white-space:pre-line; font-size:13px; color:#334155; line-height:1.85}
+  .warnslot{background:var(--amber-soft); border:1px solid var(--amber-line); border-radius:11px; padding:15px 16px; white-space:pre-line; line-height:1.85; font-size:12.5px; color:var(--amber-ink); font-weight:600}
+  .monthcal{width:100%; border-collapse:collapse; text-align:center}
+  .monthcal th{font-size:11px; color:var(--muted); font-weight:600; padding:5px 0}
+  .monthcal td{font-size:12px; color:#475569; padding:7px 0; border-radius:7px}
+  .monthcal td.today{background:var(--indigo); color:#fff; font-weight:700}
+  .weather-link{display:flex; align-items:center; gap:12px; background:var(--blue-soft); border:1px solid #dbeafe; border-radius:11px; padding:15px 16px; text-decoration:none}
+  .weather-link .ico{font-size:24px}
+  .weather-link .wt{font-weight:700; color:var(--blue-ink); font-size:13px}
+  .weather-link .go{margin-left:auto; font-size:11px; color:var(--blue-ink); font-weight:700; white-space:nowrap}
+  .tasklist{display:flex; flex-direction:column; gap:12px}
+  .task-row{display:flex; align-items:center; gap:12px}
+  .daybadge{flex-shrink:0; min-width:20px; text-align:center; border-radius:8px; padding:4px 9px; font-size:12px; font-weight:700}
+  .task-title{font-size:13px; color:#334155}
+  .day-mon{background:#eef2ff; color:#4f46e5}
+  .day-tue{background:#ecfeff; color:#0e7490}
+  .day-wed{background:#f0fdf4; color:#15803d}
+  .day-thu{background:#fffbeb; color:#b45309}
+  .day-fri{background:#f5f3ff; color:#6d28d9}
+  .day-sat{background:#eff6ff; color:#1d4ed8}
+  .day-sun{background:#fef2f2; color:#b91c1c}
+  .news-item{display:block; text-decoration:none; color:#334155; font-size:13px; line-height:1.85}
+  .news-item a{color:#334155; text-decoration:none}
+  .news-item a:hover{color:var(--indigo)}
+</style>
+</head>
+<body>
+<div class="frame">
+  <div class="top">
+    <div>
+      <div class="date">2026년 7월 22일</div>
+      <div class="title">오늘의 브리핑</div>
+    </div>
+    <div class="chips">
+      <div class="chip"><div class="lbl">오늘 일정</div><div class="num">2건</div></div>
+      <div class="chip"><div class="lbl">오늘 할 일</div><div class="num">0건</div></div>
+      <div class="chip warn"><div class="lbl">주의 필요</div><div class="num">1건</div></div>
+    </div>
+  </div>
+  <div class="greet">나른한 오후지만 조금만 더 힘내요! 잘하고 있어요 💪</div>
+  <div class="progress">
+    <div class="plabel">이번 주 할 일 0 / 0 완료</div>
+    <div class="track"><div class="fill" style="width:0%"></div></div>
+    <div class="pct">0%</div>
+  </div>
+  <div class="grid3">
+    <div class="col">
+      <div>
+        <a class="sec-head sec-link" href="https://outlook.office.com/calendar/" target="_top"><span class="dot"></span>오늘 일정<span class="go">Outlook 열기 →</span></a>
+        <div class="card"><div class="slot">• 09:30  LG전자서비스 서전주점, 효천초 14
+• 09:00  전북특별자치도교육청 직원용노트북 작업</div></div>
+      </div>
+      <div>
+        <a class="sec-head sec-link" href="https://to-do.office.com/" target="_top"><span class="dot"></span>오늘 할 일<span class="go">To-Do 열기 →</span></a>
+        <div class="card"><div class="slot">오늘 등록된 할 일이 없어요.</div></div>
+      </div>
+      <div>
+        <div class="sec-head amber"><span class="dot"></span>조정이 필요해 보여요</div>
+        <div class="warnslot">같은 시간에 겹치는 일정이 있어요. 확인해보세요</div>
+      </div>
+    </div>
+    <div class="col">
+      <div>
+        <div class="sec-head"><span class="dot"></span>이번 주 안에 처리</div>
+        <div class="card"><div class="tasklist"></div></div>
+      </div>
+      <div>
+        <div class="sec-head"><span class="dot"></span>다가오는 마감</div>
+        <div class="card"><div class="slot">다가오는 마감이 없어요.</div></div>
+      </div>
+      <div>
+        <div class="sec-head"><span class="dot"></span>이번 달</div>
+        <div class="card"><table class="monthcal"><tr><th>월</th><th>화</th><th>수</th><th>목</th><th>금</th><th>토</th><th>일</th></tr><tr><td></td><td></td><td class=day>1</td><td class=day>2</td><td class=day>3</td><td class=day>4</td><td class=day>5</td></tr><tr><td class=day>6</td><td class=day>7</td><td class=day>8</td><td class=day>9</td><td class=day>10</td><td class=day>11</td><td class=day>12</td></tr><tr><td class=day>13</td><td class=day>14</td><td class=day>15</td><td class=day>16</td><td class=day>17</td><td class=day>18</td><td class=day>19</td></tr><tr><td class=day>20</td><td class=day>21</td><td class=today>22</td><td class=day>23</td><td class=day>24</td><td class=day>25</td><td class=day>26</td></tr><tr><td class=day>27</td><td class=day>28</td><td class=day>29</td><td class=day>30</td><td class=day>31</td></tr></table></div>
+      </div>
+    </div>
+    <div class="col">
+      <div>
+        <div class="sec-head"><span class="dot"></span>전북 IT 뉴스</div>
+        <div class="card"><div class="news-item">• <a href="http://www.domin.co.kr/news/articleView.html?idxno=1562531" target="_top">‘칩플레이션(Chipflation)’ 전자제품 시장 전반으로 확산</a>
+• <a href="http://www.domin.co.kr/news/articleView.html?idxno=1562394" target="_top">가마솥더위 속 활짝 피어난 수국</a>
+• <a href="http://www.domin.co.kr/news/articleView.html?idxno=1562388" target="_top">1992년 6월 3일자(수) 팔달로선생</a></div></div>
+      </div>
+      <div>
+        <div class="sec-head blue"><span class="dot"></span>날씨</div>
+        <a class="weather-link" href="https://www.weather.go.kr/w/weather/forecast/short-term.do" target="_top">
+          <div class="ico">🌦️</div>
+          <div><div class="wt">전주 날씨 보기</div></div>
+          <div class="go">바로가기 →</div>
+        </a>
+      </div>
+    </div>
+  </div>
+</div>
+</body>
+</html>
